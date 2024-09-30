@@ -170,9 +170,18 @@ RNN 的变种：LSTM 和 GRU， 基本的 RNN 存在梯度消失和梯度爆炸�
 Attention Is All You Need. https://arxiv.org/abs/1706.03762  ；是一篇2017年的研究论文,提出了Transformer架构,这是一种全新的深度学习模型,完全依赖注意力机制,不再需要循环和卷积。该论文由谷歌研究员Ashish Vaswani等人撰写,对机器学习领域,尤其是自然语言处理(NLP)产生了深远的影响。
 
 ```python
-参考：https://transformers.run/c1/attention/
-https://github.com/datawhalechina/learn-nlp-with-transformer
-https://www.cnblogs.com/mantch/p/11591937.html
+参考：
+  入门Transformer3篇文章：
+    （1）(done) 中文版本: https://zhuanlan.zhihu.com/p/54356280  英文版本：https://jalammar.github.io/illustrated-transformer/
+    （2）bert: https://medium.com/dissecting-bert/dissecting-bert-part-1-d3c3d495cdb3
+    （3）哈佛大学NLP研究组：http://nlp.seas.harvard.edu/2018/04/03/attention.html
+  其他：
+    （done）基础知识1：https://transformers.run/c1/attention/
+    （done）基础知识2： https://github.com/datawhalechina/learn-nlp-with-transformer
+    （done）Transformer各层网络结构详解： https://www.cnblogs.com/mantch/p/11591937.html
+    （done） 放弃幻想，全面拥抱Transformer：自然语言处理三大特征抽取器（CNN/RNN/TF）比较： https://zhuanlan.zhihu.com/p/54743941
+    (done) 关于Transformer的若干问题整理记录(牛客): https://www.nowcoder.com/discuss/353155435551203328
+    (done) 针对Kyubyong实现的tensorflow代码进行解读（代码地址https://github.com/Kyubyong/transformer）： https://www.cnblogs.com/zhouxiaosong/p/11032431.html
 ```
 
 #### 3-1、**核心思想**：
@@ -183,11 +192,11 @@ https://www.cnblogs.com/mantch/p/11591937.html
 - Multi-Head attention
 - Point wise feed forward network
 - Encoder and decoder
+- Padding Mask 和 Sequence Mask
 
 #### 3-2、论文概读：
 
 ```
-
 
 ```
 
@@ -197,6 +206,7 @@ https://www.cnblogs.com/mantch/p/11591937.html
 
 ```python
 （1）、输入的词语首先被转换为词向量。由于注意力机制无法捕获词语之间的位置关系，因此还通过 positional embeddings 向输入中添加位置信息；
+Positional Encoding:在偶数位置，使用正弦编码，在奇数位置，使用余弦编码。
 （2）、Encoder 由一堆 encoder layers (blocks) 组成，类似于图像领域中的堆叠卷积层。同样地，在 Decoder 中也包含有堆叠的 decoder layers；
 （3）、Encoder 的输出被送入到 Decoder 层中以预测概率最大的下一个词，然后当前的词语序列又被送回到 Decoder 中以继续生成下一个词，重复直至出现序列结束符 EOS 或者超过最大输出长度。
 ```
@@ -238,8 +248,6 @@ Transformer Decoder 与 Encoder 最大的不同在于 Decoder 有两个注意力
 
 步骤：
 
-
-
 ```
 1、输入准备（Query, Key, Value）：
 	Query (Q)：表示“查询”，它是从输入中提取的，代表我们关心的 token。
@@ -263,6 +271,8 @@ Multi-head Attention 首先通过线性映射将 Q, K, V 序列映射到特征�
 
 通过多个注意力头，Multi-head Attention 可以在多个子空间中并行操作，每个头可能关注输入序列的不同方面。
 
+原论文中说到进行Multi-head Attention的原因是将模型分为多个头，形成多个子空间，可以让模型去关注不同方面的信息，最后再将各个方面的信息综合起来。其实直观上也可以想到，如果自己设计这样的一个模型，必然也不会只做一次attention，多次attention综合的结果至少能够起到增强模型的作用，也可以类比CNN中同时使用**多个卷积核**的作用，直观上讲，多头的注意力**有助于网络捕捉到更丰富的特征/信息**。
+
 ### 5、The Feed-Forward Layer
 
 Transformer Encoder/Decoder 中的前馈子层实际上就是两层全连接神经网络，它单独地处理序列中的每一个词向量，也被称为 position-wise feed-forward layer。常见做法是让第一层的维度是词向量大小的 4 倍，然后以 GELU 作为激活函数。
@@ -277,6 +287,29 @@ Skip Connections 则是将张量直接传递给模型的下一层而不进行处
 
     (1) Post layer normalization：Transformer 论文中使用的方式，将 Layer normalization 放在 Skip Connections 之间。 但是因为梯度可能会发散，这种做法很难训练，还需要结合学习率预热 (learning rate warm-up) 等技巧；
     (2) Pre layer normalization：目前主流的做法，将 Layer Normalization 放置于 Skip Connections 的范围内。这种做法通常训练过程会更加稳定，并且不需要任何学习率预热。
+
+**BN与LN:**
+
+都是用于加速模型训练、稳定梯度、改善训练效果的正则化技术。
+
+BN: BN 会对 batch-size 个样本在每个通道的所有像素点上计算均值和方差;  --更适合 CNN 和大批量训练的深度学习模型，但在 RNN 和小批量情况下效果不佳。
+
+LN: 在特征维度上对每个序列独立的进行归一化； -- 针对每个样本的特征维度进行归一化，适合处理序列数据，尤其在 RNN 和 Transformer 等场景中表现更好。
+
+### 7、Mask==>Padding Mask 和 Sequence Mask
+
+padding mask 在所有的 scaled dot-product attention 里面都需要用到，而 sequence mask 只有在 decoder 的 self-attention 里面用到：
+
+- Padding Mask
+
+​	对于输入序列一般我们都要进行padding补齐，也就是说设定一个统一长度N，在较短的序列后面填充0到长度为N，如果输入的序列长度大于N，则截取左边长度为N的内容，把多余的直接舍弃。对于那些补零的数据来说，我们的attention机制不应该把注意力放在这些位置上，所以我们需要进行一些处理。具体的做法是，把这些位置的值加上一个非常大的负数(负无穷)，这样经过softmax后，这些位置的权重就会接近0。Transformer的padding mask实际上是一个张量，每个值都是一个Boolean，值为false的地方就是要进行处理的地方。
+
+- Sequence Mask
+
+​	sequence mask是为了使decoder不能看见未来的信息。因为Transformer不是rnn结构的，因此我们要想办法在time_step 为 t 的时刻，把 t 时刻之后的信息隐藏起来。具体做法就是产生一个上三角矩阵，上三角的值全为0，把这个矩阵作用在每一个序列上。
+
+　　对于 decoder 的 self-attention，里面使用到的 scaled dot-product attention，同时需要padding mask 和 sequence mask 作为 attn_mask，具体实现就是两个mask相加作为attn_mask。
+　　其他情况，attn_mask 一律等于 padding mask。
 
 ## 三、Bert
 
