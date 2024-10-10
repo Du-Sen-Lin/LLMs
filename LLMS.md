@@ -419,7 +419,6 @@ RNN 的变种：LSTM 和 GRU， 基本的 RNN 存在梯度消失和梯度爆炸�
 
 ```python
 # https://github.com/alexaapo/BERT-based-pretrained-model-using-SQuAD-2.0-dataset
-# 
 ```
 
 
