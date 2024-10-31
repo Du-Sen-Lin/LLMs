@@ -14,6 +14,10 @@
 文本编码：使用自然语言处理模型（如 BERT、GPT 或 CLIP）对输入的文本进行编码，将文本转换为适用于神经网络的向量。
 图像生成：将文本编码作为条件输入到生成模型（如扩散模型或 GAN）中，以逐步生成符合文本描述的图像。
 多次迭代优化：模型可能会进行多次生成和优化，在不同阶段添加和减少噪声，最终输出清晰、符合描述的图像。
+
+# A1111
+A1111 通常指的是 Automatic1111 Web UI，这是一个非常流行的用于 Stable Diffusion 的图形界面（UI）。这个界面在 GitHub 上开源，提供了方便的工具和插件系统，允许用户使用 Stable Diffusion 模型生成图像并自定义生成参数，且无需直接使用命令行操作。
+Automatic1111 Web UI 支持许多扩展，例如 ControlNet、LoRA 等，并且可以加载多种预训练模型，使得生成图像的过程更加灵活和直观。
 ```
 
 
@@ -54,6 +58,13 @@ Abstract:
 
 ```
 我们提出了 ControlNet，这是一种神经网络架构，可将空间调节控制添加到大型预训练文本到图像扩散模型中。 ControlNet 锁定可用于生产的大型扩散模型，并重用其经过数十亿图像预训练的深度且强大的编码层作为强大的骨干来学习一组不同的条件控制。神经架构与“零卷积”（零初始化卷积层）连接，参数从零逐渐增长，并确保没有有害噪声会影响微调。我们使用稳定扩散、使用单个或多个条件、有或没有提示来测试各种条件控制，例如边缘、深度、分割、人体姿势等。我们证明了 ControlNet 的训练对于小型（<50k）和大型（>1m）数据集都是稳健的。大量结果表明 ControlNet 可以促进更广泛的应用来控制图像扩散模型。
+```
+
+```python
+https://github.com/lllyasviel/ControlNet
+# sd web ui --- A1111
+https://github.com/AUTOMATIC1111/stable-diffusion-webui
+#controlnet扩展 https://github.com/Mikubill/sd-webui-controlnet
 ```
 
 
