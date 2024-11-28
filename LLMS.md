@@ -265,6 +265,18 @@ Transformer Decoder 与 Encoder 最大的不同在于 Decoder 有两个注意力
 	使用这些权重对 V（Value）进行加权求和，得到最终的注意力输出：Attention Output=Attention Weights×𝑉
 ```
 
+Attention场景常用实现方式： Scaled Dot-product Attention 中 Q K V的理解 举例说明：
+
+![image-20241127193437099](.\images\image-20241127193437099.png)
+
+![image-20241127193521495](.\images\image-20241127193521495.png)
+
+![image-20241127193556905](.\images\image-20241127193556905.png)
+
+
+
+
+
 **Multi-Head Attention**:
 
 Multi-head Attention 首先通过线性映射将 Q, K, V 序列映射到特征空间，每一组线性投影后的向量表示称为一个头 (head)，然后在每组映射后的序列上再应用 Scaled Dot-product Attention。 并行计算多个 Scaled Dot-product Attention，并在每个头的输出后进行拼接和线性变换。
