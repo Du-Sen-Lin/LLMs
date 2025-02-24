@@ -330,6 +330,26 @@ T5在预训练阶段使用了大规模的文本数据集进行训练，使其能
 
 
 
+## IC-Light
+
+```
+https://github.com/lllyasviel/IC-Light
+```
+
+
+
+## CogVideo:
+
+视频生成模型
+
+```
+github: https://github.com/THUDM/CogVideo
+魔塔社区：https://modelscope.cn/studios/ZhipuAI/CogVideoX-5b-demo/
+ModelScope魔塔社区：https://modelscope.cn/studios
+```
+
+
+
 # Log:
 
 

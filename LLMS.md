@@ -482,3 +482,70 @@ Shifted Window Transformer
 - **捕捉多尺度特征**：分层结构允许 Swin Transformer 捕捉局部到全局的多尺度特征，类似于CNN的层次感受野机制。
 - **良好的可扩展性**：由于计算效率的提高和分层设计，Swin Transformer 可以在多种视觉任务（如目标检测、语义分割等）中表现优异。
 
+
+
+## 五、LLMS
+
+### 前置：
+
+```python
+GitHub上开源了不少 ChatGPT复现方案。总体来说这些复现库分为两类：
+1、基于 ChatGPT API 接口抓取指令数据基于开源大模型权重做指令微调，比如基于 LLaMA 微调的 Alpaca，基于 Bloomz 微调的 BELLE。这类微调模型因为直接“蒸馏”ChatGPT的"标准答案"，所以效果通常还不错。
+LLaMA(Large Language Model Meta AI）):由 Meta AI（原 Facebook AI） 开发的一系列开源大语言模型，旨在为研究人员和开发者提供一个强大的自然语言处理工具集。  
+Alpaca: 由 Envato Elements 提供的 Photoshop 插件，旨在利用人工智能技术提升设计师的工作效率和创意表达。该插件集成了多种 AI 功能，帮助用户在 Photoshop 中实现更高效的图像处理和设计。
+BELLE: 中文的大型语言模型 
+
+2、实现完整的 SFT（Supervised Fine-Tuning 监督微调）/RLHF（Reinforcement Learning with Human Feedback 带人类反馈的强化学习） 流程，以供用户自己从头开发自己的模型。这些库主要有 PaLM-rlhf-pytorch，ColossalAI-Chat，DeepSpeed-Chat，TRLX, Huggingface TRL。
+
+# TRLX: 一个强化学习库，trlX 是一个从头开始设计的分布式训练框架，专注于使用提供的奖励函数或奖励标记数据集通过强化学习来微调大型语言模型。 实现有 Proximal Policy Optimization (PPO)，Implicit Language Q-Learning (ILQL) -- https://github.com/CarperAI/trlx
+
+# Proximal Policy Optimization (PPO): PPO 是基于 Trust Region Policy Optimization (TRPO) 算法的改进; 需要在线交互，依赖于环境反馈, 直接优化策略，利用奖励函数对生成行为进行约束; 
+
+# Implicit Language Q-Learning (ILQL): 依赖离线数据集，无需环境交互; 间接学习最优策略，通过 Q 值和软策略改进。
+```
+
+
+
+### 1、BELLE
+
+```
+https://github.com/LianjiaTech/BELLE
+```
+
+BELLE微调流程：
+
+```
+https://github.com/LianjiaTech/BELLE/blob/main/train/README_FT.md
+```
+
+- 全量微调 + Deepspeed
+
+```
+全量微调指的是在预训练模型的基础上，对模型的所有参数进行训练和优化。与 LoRA 不同，全量微调会更新模型的每一层和每个参数。
+Deepspeed 则通过优化训练过程，提供高效的内存管理和计算资源利用：混合精度训练（Mixed Precision Training）；零冗余优化（ZeRO Optimization）；模型并行；多GPU加速
+```
+
+- LoRA + Deepspeed
+
+```
+LoRA微调方法：轻量级的微调方法，主要通过在预训练模型的基础上增加低秩的适配层（通常是矩阵分解）来调整模型参数，而不是直接更新整个模型的所有参数。
+低秩矩阵：LoRA 通过在模型的原始权重矩阵上添加一个低秩矩阵，使得模型仅需调整较少的参数，而不是全部参数。这种方法通过引入较少的可训练参数（通常是小矩阵）来达到微调的效果。
+参数冻结：LoRA 通常会冻结模型的大部分参数，仅对少量参数（低秩矩阵）进行训练。这使得微调的计算和内存需求显著降低。
+```
+
+- LoRA + int8
+
+```
+int8量化通过将浮点数转换为8位整数，进一步压缩了模型的存储需求并加速了推理，特别适用于在推理阶段应用（例如在线推理或边缘设备）
+```
+
+
+
+### 2、InstructGPT
+
+Instruct GPT的训练流程主要分为三个阶段（后面两个阶段便是我们通常说的 RLHF）:
+
+- **有监督微调 (SFT)**：使用人工标注的数据对预训练模型进行微调。
+- **奖励模型 (RM) 训练**：根据人类偏好对模型输出进行排序，训练奖励模型以评估生成内容的质量。
+- **强化学习 (RL) 优化**：PPO 训练， 采用近端策略优化 (PPO) 算法，利用奖励模型指导策略更新，生成更符合人类偏好的内容。
+
