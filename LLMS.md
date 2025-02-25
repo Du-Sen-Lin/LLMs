@@ -504,8 +504,6 @@ BELLE: 中文的大型语言模型
 # Implicit Language Q-Learning (ILQL): 依赖离线数据集，无需环境交互; 间接学习最优策略，通过 Q 值和软策略改进。
 ```
 
-
-
 ### 1、BELLE
 
 ```

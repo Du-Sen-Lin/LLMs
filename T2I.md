@@ -278,7 +278,7 @@ Abstract:
 https://github.com/lllyasviel/ControlNet
 # sd web ui --- A1111
 https://github.com/AUTOMATIC1111/stable-diffusion-webui
-#controlnet扩展 https://github.com/Mikubill/sd-webui-controlnet
+# controlnet扩展 https://github.com/Mikubill/sd-webui-controlnet
 ```
 
 
@@ -351,8 +351,6 @@ ModelScope魔塔社区：https://modelscope.cn/studios
 
 
 # Log:
-
-
 
 Nov 18, 2024：
 
