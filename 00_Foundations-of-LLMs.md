@@ -129,7 +129,7 @@ print(response)
 
 ## 三、vllm 
 
-部署常用框架：vllm  与 SGLang
+LLM 部署常用框架：vllm  与 SGLang
 
 ```
 github: https://github.com/vllm-project/vllm
@@ -137,6 +137,8 @@ doc: https://docs.vllm.ai/en/latest/
 ```
 
 VLLM是LLM推理和服务的快速易用库。
+
+### 环境：
 
 新增加TensorRT, Openvino, ModelScope 环境，可适应图像与LLM。为了增加 **VLLM** 环境用于LLM的部署推理，更新一版，原因：VLLM必须编译许多CUDA内核，该汇编引入了与其他CUDA版本和Pytorch版本的二进制不相容性，会重新安装Pytorch等版本，因此，建议安装具有新的新环境的VLLM。所有commit 一个版本，启动新的容器，安装 vllm 环境。
 
@@ -166,6 +168,10 @@ root@192.168.42.211:4322
 ```
 
 ```
+
+
+
+
 
 
 
